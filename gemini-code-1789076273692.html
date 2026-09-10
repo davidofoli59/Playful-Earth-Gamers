@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEG — Playful Earth Gamers | Competitive Esports & Skill Escrow Platform</title>
+  <meta name="description" content="Playful Earth Gamers (PEG) is the global hybrid esports, skill-challenge, and reward platform powered by automated escrow and multi-gateway settlements.">
+
+  <!-- Typography & Styling Core -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS Core -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            pegBg: '#02060E',
+            pegCardBg: '#08101E',
+            pegCardBorder: '#122038',
+            pegGreen: '#00FF66',
+            pegGreenDark: '#00B347',
+            pegCyan: '#00E5FF',
+            pegGold: '#FFD700',
+            pegRed: '#FF3366',
+            pegPurple: '#8A2BE2'
+          },
+          fontFamily: {
+            orbitron: ['Orbitron', 'sans-serif'],
+            rajdhani: ['Rajdhani', 'sans-serif'],
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          },
+          boxShadow: {
+            'neon-green': '0 0 25px rgba(0, 255, 102, 0.35)',
+            'neon-cyan': '0 0 25px rgba(0, 229, 255, 0.35)',
+            'neon-gold': '0 0 25px rgba(255, 215, 0, 0.35)',
+            'neon-red': '0 0 25px rgba(255, 51, 102, 0.35)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- High-Performance WebGL & Animation Frameworks -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- FIREBASE COMPATIBILITY MODE ENGINE (v9 COMPAT) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <!-- Global Payment SDK Integration Layer -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <script src="https://checkout.flutterwave.com/v3.js"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      background-color: #02060E;
+      color: #E2E8F0;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      perspective: 1200px; /* Global 3D Perspective Canvas */
+    }
+    
+    .glass-panel {
+      background: rgba(8, 16, 30, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(18, 32, 56, 0.8);
+    }
+
+    .glass-panel-gold {
+      background: rgba(18, 14, 4, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+    }
+
+    .gradient-btn {
+      background: linear-gradient(135deg, #00FF66 0%, #00B347 100%);
+      color: #000;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      transition: all 0.25s ease-out;
+    }
+    .gradient-btn:hover {
+      box-shadow: 0 0 30px rgba(0, 255, 102, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .ticker-wrap {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      background: #050B14;
+      border-top: 1px solid #122038;
+      border-bottom: 1px solid #122038;
+    }
+    .ticker-move {
+      display: inline-block;
+      animation: marquee 35s linear infinite;
+    }
+    @keyframes marquee {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-50%, 0, 0); }
+    }
+
+    /* Dynamic 3D Tilt Card Container */
+    .tilt-card-container {
+      perspective: 1000px;
+    }
+    .saas-3d-card {
+      transform-style: preserve-3d;
+      transition: transform 0.25s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+      will-change: transform;
+    }
+    .saas-3d-card .card-3d-layer {
+      transform: translateZ(25px);
+    }
+    .saas-3d-card .card-3d-layer-deep {
+      transform: translateZ(45px);
+    }
+
+    /* 3D SCROLLING FADE/SPLASH IN & FADE/SPLASH OUT STYLES */
+    .peg-scroll-3d {
+      opacity: 0;
+      transform: translate3d(0, 80px, -180px) rotateX(15deg) scale(0.92);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+    .peg-scroll-3d.peg-scroll-visible {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) rotateX(0deg) scale(1);
+    }
+    .peg-scroll-3d.peg-scroll-exit-up {
+      opacity: 0;
+      transform: translate3d(0, -80px, -180px) rotateX(-15deg) scale(0.92);
+    }
+
+    #webgl-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Interactive Storytelling Stepper */
+    .story-step {
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .story-step.active-step {
+      border-color: #00FF66;
+      background: rgba(0, 255, 102, 0.05);
+      transform: scale(1.02);
+    }
+
+    /* Custom Scrollbar Styling */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #02060E; }
+    ::-webkit-scrollbar-thumb { background: #122038; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00FF66; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col relative selection:bg-pegGreen selection:text-black">
+
+  <!-- BACKGROUND 3D CANVAS -->
+  <div id="webgl-canvas"></div>
+
+  <!-- INFRASTRUCTURE SECURITY & TRUST TICKER -->
+  <div class="ticker-wrap relative z-50 py-2.5 text-xs font-mono">
+    <div class="ticker-move flex items-center space-x-8 text-gray-400">
+      <span class="flex items-center space-x-2"><span id="firebase-status-dot" class="w-2 h-2 rounded-full bg-pegGreen animate-pulse"></span> <strong class="text-white">FIREBASE LIVE COMPAT DB:</strong> <span id="firebase-status-text" class="text-pegGreen">CONNECTED (US-EAST-1)</span></span>
+      <span class="flex items-center space-x-2"><strong class="text-pegGreen">PAYSTACK ENGINE:</strong> GHANA MOMO & NIGERIA CARD GATEWAY LIVE</span>
+      <span class="flex items-center space-x-2"><strong class="text-pegCyan">FLUTTERWAVE SWITCH:</strong> PAN-AFRICAN SETTLEMENT ACTIVE</span>
+      <span class="flex items-center space-x-2"><strong class="text-pegPurple">STRIPE & WEB3:</strong> GLOBAL CARD & USDT ESCROW VERIFIED</span>
+      <span class="flex items-center space-x-2"><strong class="text-pegGold">DATA PROTECTION:</strong> AES-256 ENCRYPTED WALLET ARCHITECTURE</span>
+      <span class="flex items-center space-x-2"><strong class="text-white">ANTI-CHEAT VERIFICATION:</strong> HEURISTIC MATCH INGESTION ONLINE</span>
+      <!-- Repeated for smooth infinite scroll -->
+      <span class="flex items-center space-x-2"><span class="w-2 h-2 rounded-full bg-pegGreen animate-pulse"></span> <strong class="text-white">FIREBASE LIVE COMPAT DB:</strong> CONNECTED</span>
+      <span class="flex items-center space-x-2"><strong class="text-pegGreen">PAYSTACK ENGINE:</strong> GHANA MOMO & NIGERIA CARD GATEWAY LIVE</span>
+      <span class="flex items-center space-x-2"><strong class="text-pegCyan">FLUTTERWAVE SWITCH:</strong> PAN-AFRICAN SETTLEMENT ACTIVE</span>
+      <span class="flex items-center space-x-2"><strong class="text-pegPurple">STRIPE & WEB3:</strong> GLOBAL CARD & USDT ESCROW VERIFIED</span>
+    </div>
+  </div>
+
+  <!-- NAVIGATION HEADER -->
+  <header class="sticky top-0 z-40 glass-panel border-b border-pegCardBorder px-4 lg:px-8 py-3.5">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <div class="w-10 h-10 rounded-xl bg-pegGreen text-black font-orbitron font-black text-xl flex items-center justify-center shadow-neon-green">
+          PEG
+        </div>
+        <div>
+          <span class="font-orbitron font-bold text-lg md:text-xl tracking-wider text-white block leading-none">PLAYFUL EARTH</span>
+          <span class="text-[10px] font-rajdhani font-bold text-pegGreen tracking-widest uppercase">GAMERS PLATFORM</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden lg:flex items-center space-x-6 text-xs font-rajdhani font-bold tracking-wider uppercase text-gray-300">
+        <a href="#challenges" class="hover:text-pegGreen transition-colors">Game Challenges</a>
+        <a href="#saas-storytelling" class="hover:text-pegGreen transition-colors">How Escrow Works</a>
+        <a href="#security-arch" class="hover:text-pegGreen transition-colors">Security Architecture</a>
+        <a href="#gateways" class="hover:text-pegGreen transition-colors">Payments & Wallet</a>
+        <a href="#truth-vault" class="hover:text-pegGreen transition-colors">Trust & Audits</a>
+        <a href="#ads-leaderboard" class="hover:text-pegGreen transition-colors">Commercials Hub</a>
+        <a href="#faq-section" class="hover:text-pegGreen transition-colors">FAQ</a>
+        <a href="#creator-hub" class="hover:text-pegGreen transition-colors">Creator Hub</a>
+      </nav>
+
+      <!-- User Verification State & Actions -->
+      <div class="flex items-center space-x-3">
+        <div id="user-status-badge" class="hidden md:flex items-center space-x-2 bg-pegCardBg border border-pegCardBorder px-3 py-1 rounded-lg text-xs font-mono">
+          <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+          <span class="text-gray-400">Status: <strong class="text-white">Unverified Tier 0</strong></span>
+        </div>
+        
+        <button onclick="openRegistrationFlow()" class="gradient-btn px-5 py-2.5 rounded-xl text-xs flex items-center space-x-2">
+          <span>CREATE VERIFIED ACCOUNT</span>
+          <span>⚡</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <main class="relative z-10 flex-grow">
+
+    <!-- HERO SECTION WITH ENTERPRISE SECURITY METRICS -->
+    <section class="pt-12 pb-16 px-4 lg:px-8 text-center relative peg-scroll-3d">
+      <div class="max-w-5xl mx-auto space-y-6">
+        
+        <!-- Registration Tier Alert Badge -->
+        <div class="inline-flex items-center space-x-3 bg-pegCardBg/80 border border-pegGreen/40 px-4 py-2 rounded-full text-xs font-rajdhani font-bold text-pegGreen">
+          <span class="flex h-2 w-2 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pegGreen opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-pegGreen"></span>
+          </span>
+          <span class="uppercase tracking-widest">EARLY ACCESS TIER-1 REGISTRATION OPEN WORLDWIDE</span>
+        </div>
+
+        <h1 class="font-orbitron font-black text-4xl sm:text-6xl md:text-7xl text-white tracking-tight leading-none">
+          COMPETE. ESCROW STAKE. <br/>
+          <span class="text-pegGreen">EARN WITH VERIFIED PROOF.</span>
+        </h1>
+
+        <p class="text-sm md:text-base text-gray-300 max-w-3xl mx-auto leading-relaxed font-normal">
+          Playful Earth Gamers (PEG) provides automated match dispute resolution, multi-currency wallet balances, anti-cheat proof verification, and instant bank/mobile money payouts across Africa and international regions.
+        </p>
+
+        <!-- Dynamic Action Grid -->
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <button onclick="openRegistrationFlow()" class="gradient-btn px-8 py-4 rounded-xl text-sm tracking-wider flex items-center space-x-3 shadow-neon-green">
+            <span>REGISTER & VERIFY IDENTITY</span>
+            <span class="text-lg">➔</span>
+          </button>
+          <button onclick="openWalletModal()" class="glass-panel px-7 py-4 rounded-xl font-rajdhani font-bold text-white text-sm border border-pegCardBorder hover:border-pegCyan transition-all flex items-center space-x-2">
+            <span>💳</span>
+            <span>MANAGE MULTI-GATEWAY WALLET</span>
+          </button>
+        </div>
+
+        <!-- System Real-time Stats Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto pt-8 tilt-card-container">
+          <div class="glass-panel p-4 rounded-2xl border border-pegCardBorder text-center saas-3d-card">
+            <div class="card-3d-layer font-orbitron font-bold text-2xl text-pegGreen" id="stat-active-users">24,890</div>
+            <div class="card-3d-layer text-[11px] font-rajdhani font-bold text-gray-400 uppercase tracking-wider mt-1">Verified Players</div>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl border border-pegCardBorder text-center saas-3d-card">
+            <div class="card-3d-layer font-orbitron font-bold text-2xl text-pegCyan" id="stat-escrow-volume">$148,500</div>
+            <div class="card-3d-layer text-[11px] font-rajdhani font-bold text-gray-400 uppercase tracking-wider mt-1">Escrow Volume</div>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl border border-pegCardBorder text-center saas-3d-card">
+            <div class="card-3d-layer font-orbitron font-bold text-2xl text-pegGold" id="stat-tournaments">1,240</div>
+            <div class="card-3d-layer text-[11px] font-rajdhani font-bold text-gray-400 uppercase tracking-wider mt-1">Completed Matches</div>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl border border-pegCardBorder text-center saas-3d-card">
+            <div class="card-3d-layer font-orbitron font-bold text-2xl text-pegPurple">99.98%</div>
+            <div class="card-3d-layer text-[11px] font-rajdhani font-bold text-gray-400 uppercase tracking-wider mt-1">Anti-Cheat Accuracy</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TRUSTED INDUSTRY PARTNERS & GAME PUBLISHERS -->
+    <section class="py-10 border-y border-pegCardBorder bg-pegBg/80 peg-scroll-3d">
+      <div class="max-w-7xl mx-auto px-4 lg:px-8">
+        <p class="text-center text-[11px] font-rajdhani font-bold uppercase tracking-widest text-gray-400 mb-6">
+          INTEGRATED INFRASTRUCTURE & SUPPORTED GAME ECOSYSTEMS
+        </p>
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6 items-center justify-items-center opacity-75 grayscale hover:grayscale-0 transition-all">
+          <div class="font-orbitron font-black text-sm text-gray-300">RIOT GAMES</div>
+          <div class="font-orbitron font-black text-sm text-gray-300">EPIC GAMES</div>
+          <div class="font-orbitron font-black text-sm text-gray-300">ACTIVISION</div>
+          <div class="font-orbitron font-black text-sm text-gray-300">UBISOFT</div>
+          <div class="font-orbitron font-black text-sm text-gray-300">EA SPORTS</div>
+          <div class="font-orbitron font-black text-sm text-gray-300">ESL GAMING</div>
+          <div class="font-orbitron font-black text-sm text-pegGreen">PAYSTACK</div>
+          <div class="font-orbitron font-black text-sm text-pegCyan">FLUTTERWAVE</div>
+          <div class="font-orbitron font-black text-sm text-pegPurple">STRIPE</div>
+          <div class="font-orbitron font-black text-sm text-yellow-500">FIREBASE</div>
+          <div class="font-orbitron font-black text-sm text-orange-500">AWS CLOUD</div>
+          <div class="font-orbitron font-black text-sm text-purple-400">TWITCH TV</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3D SAAS STORYTELLING ANIMATION: THE MATCH ESCROW LIFECYCLE -->
+    <section id="saas-storytelling" class="max-w-7xl mx-auto px-4 lg:px-8 py-20 border-b border-pegCardBorder peg-scroll-3d">
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <span class="text-pegGreen text-xs font-bold font-rajdhani uppercase tracking-widest">3D INTERACTIVE STORYTELLING</span>
+        <h2 class="font-orbitron font-bold text-3xl md:text-4xl text-white mt-1">How PEG Escrow Protects Every Cent</h2>
+        <p class="text-xs md:text-sm text-gray-400 mt-2">
+          Click through or hover over the workflow lifecycle steps below to watch our automated anti-cheat escrow verification pipeline execute in real time.
+        </p>
+      </div>
+
+      <div class="grid lg:grid-cols-12 gap-8 items-center">
+        <!-- Interactive Stepper Selector (Left Column) -->
+        <div class="lg:col-span-5 space-y-4">
+          
+          <div onclick="setStoryStep(1)" id="story-step-1" class="story-step active-step glass-panel p-5 rounded-2xl border border-pegCardBorder cursor-pointer">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-xl bg-pegGreen/20 text-pegGreen font-orbitron font-bold flex items-center justify-center text-sm">01</div>
+              <div>
+                <h4 class="font-orbitron font-bold text-sm text-white">Challenge Stake Lock</h4>
+                <p class="text-[11px] text-gray-400 mt-0.5">Players lock entry stakes via Paystack MoMo or Card into isolated escrow balance.</p>
+              </div>
+            </div>
+          </div>
+
+          <div onclick="setStoryStep(2)" id="story-step-2" class="story-step glass-panel p-5 rounded-2xl border border-pegCardBorder cursor-pointer">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-xl bg-pegCyan/20 text-pegCyan font-orbitron font-bold flex items-center justify-center text-sm">02</div>
+              <div>
+                <h4 class="font-orbitron font-bold text-sm text-white">Automated Lobby Dispatch</h4>
+                <p class="text-[11px] text-gray-400 mt-0.5">Lobby credentials generated and cryptographically distributed to verified players.</p>
+              </div>
+            </div>
+          </div>
+
+          <div onclick="setStoryStep(3)" id="story-step-3" class="story-step glass-panel p-5 rounded-2xl border border-pegCardBorder cursor-pointer">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-xl bg-pegGold/20 text-pegGold font-orbitron font-bold flex items-center justify-center text-sm">03</div>
+              <div>
+                <h4 class="font-orbitron font-bold text-sm text-white">Anti-Cheat Proof Ingest</h4>
+                <p class="text-[11px] text-gray-400 mt-0.5">Match telemetry, screenshots, and game API outcomes parsed by AI verification engines.</p>
+              </div>
+            </div>
+          </div>
+
+          <div onclick="setStoryStep(4)" id="story-step-4" class="story-step glass-panel p-5 rounded-2xl border border-pegCardBorder cursor-pointer">
+            <div class="flex items-center space-x-4">
+              <div class="w-10 h-10 rounded-xl bg-pegPurple/20 text-pegPurple font-orbitron font-bold flex items-center justify-center text-sm">04</div>
+              <div>
+                <h4 class="font-orbitron font-bold text-sm text-white">Instant Webhook Settlement</h4>
+                <p class="text-[11px] text-gray-400 mt-0.5">Winner determined. Funds released to winner's mobile money/bank account within seconds.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 3D Story Stage Rendering Visualizer (Right Column) -->
+        <div class="lg:col-span-7 tilt-card-container">
+          <div class="glass-panel p-8 rounded-3xl border border-pegCardBorder saas-3d-card min-h-[360px] flex flex-col justify-between relative overflow-hidden">
+            <!-- Simulated Stage Canvas Graphic -->
+            <div class="card-3d-layer flex items-center justify-between pb-6 border-b border-pegCardBorder">
+              <div class="flex items-center space-x-3">
+                <span class="w-3 h-3 rounded-full bg-pegGreen animate-ping"></span>
+                <span class="font-mono text-xs text-gray-300" id="story-visual-header">STAGE 1: ESCROW STAKE LOCKING</span>
+              </div>
+              <span class="font-mono text-[10px] text-pegGreen bg-pegGreen/10 px-3 py-1 rounded-full border border-pegGreen/30">PROTOCOL: LIVE</span>
+            </div>
+
+            <!-- Dynamic Story Content Graphic Frame -->
+            <div class="card-3d-layer-deep py-8 my-auto text-center" id="story-visual-body">
+              <div class="w-20 h-20 mx-auto rounded-2xl bg-pegGreen/10 border border-pegGreen/40 flex items-center justify-center text-3xl text-pegGreen mb-4 animate-bounce">
+                🔒
+              </div>
+              <h3 class="font-orbitron font-bold text-xl text-white mb-2">Cryptographic Vault Reservation</h3>
+              <p class="text-xs text-gray-400 max-w-md mx-auto leading-relaxed">
+                Both players' entry stakes are simultaneously tokenized and held in zero-trust multi-signature vault contracts, removing financial default risk before the match begins.
+              </p>
+            </div>
+
+            <!-- Interactive Stage Progress Bar -->
+            <div class="card-3d-layer pt-4 border-t border-pegCardBorder flex items-center justify-between text-xs font-mono">
+              <span class="text-gray-500">SYSTEM STATE: VERIFIED</span>
+              <div class="w-32 bg-pegBg h-1.5 rounded-full overflow-hidden border border-pegCardBorder">
+                <div id="story-progress-bar" class="bg-pegGreen h-full w-1/4 transition-all duration-500"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MULTI-STAGE ACCOUNT REGISTRATION & SECURITY PIPELINE SECTION -->
+    <section id="security-arch" class="max-w-7xl mx-auto px-4 lg:px-8 py-16 peg-scroll-3d">
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <span class="text-pegGreen text-xs font-bold font-rajdhani uppercase tracking-widest">ZERO-TRUST USER ONBOARDING</span>
+        <h2 class="font-orbitron font-bold text-3xl md:text-4xl text-white mt-1">Multi-Stage Account Verification</h2>
+        <p class="text-xs md:text-sm text-gray-400 mt-2">
+          PEG strictly enforces financial compliance. Unverified accounts cannot deposit, challenge, or withdraw funds.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-4 gap-6 tilt-card-container">
+        
+        <!-- Stage 1 -->
+        <div class="glass-panel p-6 rounded-2xl border border-pegCardBorder saas-3d-card relative">
+          <div class="card-3d-layer w-8 h-8 rounded-lg bg-pegGreen/20 text-pegGreen font-orbitron font-bold flex items-center justify-center text-sm mb-4">01</div>
+          <h3 class="card-3d-layer font-orbitron font-bold text-base text-white mb-2">Basic Profile</h3>
+          <p class="card-3d-layer text-xs text-gray-400 leading-relaxed mb-4">Email, phone number, encrypted password, country selection, and Date of Birth verification.</p>
+          <span class="card-3d-layer inline-block text-[10px] font-mono text-pegGreen bg-pegGreen/10 px-2 py-0.5 rounded">Access: View Games</span>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="glass-panel p-6 rounded-2xl border border-pegCardBorder saas-3d-card relative">
+          <div class="card-3d-layer w-8 h-8 rounded-lg bg-pegCyan/20 text-pegCyan font-orbitron font-bold flex items-center justify-center text-sm mb-4">02</div>
+          <h3 class="card-3d-layer font-orbitron font-bold text-base text-white mb-2">OTP Authentication</h3>
+          <p class="card-3d-layer text-xs text-gray-400 leading-relaxed mb-4">2-Factor SMS/Email One-Time Password validation to confirm real-owner contact details.</p>
+          <span class="card-3d-layer inline-block text-[10px] font-mono text-pegCyan bg-pegCyan/10 px-2 py-0.5 rounded">Access: Join Free Matches</span>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="glass-panel p-6 rounded-2xl border border-pegCardBorder saas-3d-card relative">
+          <div class="card-3d-layer w-8 h-8 rounded-lg bg-pegGold/20 text-pegGold font-orbitron font-bold flex items-center justify-center text-sm mb-4">03</div>
+          <h3 class="card-3d-layer font-orbitron font-bold text-base text-white mb-2">Jurisdiction & Age Check</h3>
+          <p class="card-3d-layer text-xs text-gray-400 leading-relaxed mb-4">Automated eligibility screening based on regional esports regulations and legal age limits (18+).</p>
+          <span class="card-3d-layer inline-block text-[10px] font-mono text-pegGold bg-pegGold/10 px-2 py-0.5 rounded">Access: Deposit Wallet</span>
+        </div>
+
+        <!-- Stage 4 -->
+        <div class="glass-panel p-6 rounded-2xl border border-pegCardBorder saas-3d-card relative">
+          <div class="card-3d-layer w-8 h-8 rounded-lg bg-pegPurple/20 text-pegPurple font-orbitron font-bold flex items-center justify-center text-sm mb-4">04</div>
+          <h3 class="card-3d-layer font-orbitron font-bold text-base text-white mb-2">KYC & Liveness Proof</h3>
+          <p class="card-3d-layer text-xs text-gray-400 leading-relaxed mb-4">Government ID document ingestion and automated facial liveness check before high-value withdrawals.</p>
+          <span class="card-3d-layer inline-block text-[10px] font-mono text-pegPurple bg-pegPurple/10 px-2 py-0.5 rounded">Access: Full Cash Payouts</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- LIVE GAME CHALLENGES MATRIX -->
+    <section id="challenges" class="max-w-7xl mx-auto px-4 lg:px-8 py-16 peg-scroll-3d">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <div>
+          <span class="text-pegGreen text-xs font-bold font-rajdhani uppercase tracking-widest">LIVE ARENA MATCHES</span>
+          <h2 class="font-orbitron font-bold text-3xl text-white mt-1">Multi-Category Challenge Hub</h2>
+        </div>
+
+        <!-- State Filter Switcher -->
+        <div class="flex flex-wrap gap-2 bg-pegCardBg p-1.5 rounded-xl border border-pegCardBorder font-rajdhani font-bold text-xs">
+          <button onclick="filterChallenges('all')" class="challenge-filter-btn px-4 py-1.5 rounded-lg bg-pegGreen text-black">ALL MATCHES</button>
+          <button onclick="filterChallenges('active')" class="challenge-filter-btn px-4 py-1.5 rounded-lg text-gray-400 hover:text-white">ACTIVE (LIVE)</button>
+          <button onclick="filterChallenges('upcoming')" class="challenge-filter-btn px-4 py-1.5 rounded-lg text-gray-400 hover:text-white">UPCOMING</button>
+          <button onclick="filterChallenges('ended')" class="challenge-filter-btn px-4 py-1.5 rounded-lg text-gray-400 hover:text-white">ENDED / SETTLED</button>
+        </div>
+      </div>
+
+      <!-- Challenge Grid Container -->
+      <div id="challenge-matrix-container" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 tilt-card-container">
+        <!-- Javascript dynamic rendering target -->
+      </div>
+    </section>
+
+    <!-- TRIPLE PAYMENT GATEWAY & ESCROW WALLET ENGINE -->
+    <section id="gateways" class="max-w-7xl mx-auto px-4 lg:px-8 py-16 peg-scroll-3d">
+      <div class="glass-panel p-8 rounded-3xl border border-pegCardBorder relative overflow-hidden">
+        
+        <div class="grid lg:grid-cols-2 gap-8 items-center">
+          <div>
+            <span class="text-pegCyan text-xs font-bold font-rajdhani uppercase tracking-widest">FINANCIAL ARCHITECTURE</span>
+            <h2 class="font-orbitron font-bold text-3xl text-white mt-1 mb-4">Integrated Multi-Gateway Escrow</h2>
+            <p class="text-xs text-gray-300 leading-relaxed mb-6">
+              PEG utilizes server-authoritative webhooks. Deposits are held in isolated smart escrow accounts until game results are cryptographically verified or approved by community moderators.
+            </p>
+
+            <div class="space-y-4">
+              <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 rounded bg-pegGreen/20 text-pegGreen flex items-center justify-center font-bold text-xs mt-0.5">✓</div>
+                <div>
+                  <strong class="text-white text-xs font-orbitron block">Paystack Integration</strong>
+                  <span class="text-[11px] text-gray-400">Direct support for Ghana Mobile Money (MTN, Vodafone, Telecel), Nigerian Cards/USSD, and SA EFT.</span>
+                </div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 rounded bg-pegCyan/20 text-pegCyan flex items-center justify-center font-bold text-xs mt-0.5">✓</div>
+                <div>
+                  <strong class="text-white text-xs font-orbitron block">Flutterwave Pan-African Switch</strong>
+                  <span class="text-[11px] text-gray-400">Coverage across Francophone Africa (XOF/XAF), Kenya (M-Pesa), Rwanda (RWF), and Uganda (UGX).</span>
+                </div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 rounded bg-pegPurple/20 text-pegPurple flex items-center justify-center font-bold text-xs mt-0.5">✓</div>
+                <div>
+                  <strong class="text-white text-xs font-orbitron block">Stripe & Web3 Crypto Escrow</strong>
+                  <span class="text-[11px] text-gray-400">Accept global Visa/Mastercard/Apple Pay along with instant USDT / USDC Polygon network deposits.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-8 flex space-x-4">
+              <button onclick="openWalletModal()" class="gradient-btn px-6 py-3 rounded-xl text-xs">OPEN WALLET DASHBOARD</button>
+              <button onclick="openDisputeModal()" class="glass-panel px-6 py-3 rounded-xl text-xs font-bold text-white border border-pegRed hover:bg-pegRed/10">SUBMIT MATCH DISPUTE</button>
+            </div>
+          </div>
+
+          <!-- Interactive Wallet Preview Box -->
+          <div class="bg-pegBg p-6 rounded-2xl border border-pegCardBorder font-mono saas-3d-card">
+            <div class="card-3d-layer flex justify-between items-center pb-4 border-b border-pegCardBorder mb-4">
+              <span class="text-xs text-gray-400">ACCOUNT WALLET BALANCE</span>
+              <span class="text-xs text-pegGreen font-bold">FIREBASE SYNCED</span>
+            </div>
+            <div class="card-3d-layer text-3xl font-bold text-white mb-6" id="wallet-preview-balance">$0.00 <span class="text-xs text-gray-500 font-normal">USD</span></div>
+
+            <div class="card-3d-layer space-y-3 text-xs mb-6">
+              <div class="flex justify-between text-gray-400">
+                <span>Available Cash:</span>
+                <span class="text-white font-bold" id="wallet-preview-available">$0.00</span>
+              </div>
+              <div class="flex justify-between text-gray-400">
+                <span>Locked in Active Escrow:</span>
+                <span class="text-pegGold font-bold" id="wallet-preview-escrow">$0.00</span>
+              </div>
+              <div class="flex justify-between text-gray-400">
+                <span>Pending Tournament Rewards:</span>
+                <span class="text-pegCyan font-bold" id="wallet-preview-rewards">$0.00</span>
+              </div>
+            </div>
+
+            <div class="card-3d-layer grid grid-cols-2 gap-3">
+              <button onclick="openWalletModal('deposit')" class="py-2.5 bg-pegGreen text-black font-rajdhani font-bold rounded-lg text-xs hover:bg-pegGreenDark">DEPOSIT FUNDS</button>
+              <button onclick="openWalletModal('withdraw')" class="py-2.5 bg-pegCardBg border border-pegCardBorder text-white font-rajdhani font-bold rounded-lg text-xs hover:border-pegGreen">WITHDRAW</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TRUTH-BUILDING, TRANSPARENCY & PROOF OF ESCROW VAULT -->
+    <section id="truth-vault" class="max-w-7xl mx-auto px-4 lg:px-8 py-16 peg-scroll-3d">
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <span class="text-pegGold text-xs font-bold font-rajdhani uppercase tracking-widest">VERIFIABLE FAIRNESS</span>
+        <h2 class="font-orbitron font-bold text-3xl text-white mt-1">Platform Transparency & Proof of Escrow</h2>
+        <p class="text-xs text-gray-400 mt-2">
+          PEG is engineered around zero hidden fees, immutable transaction logs, and real-time public reserve verification.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6 tilt-card-container">
+        
+        <div class="glass-panel p-6 rounded-2xl border border-pegCardBorder saas-3d-card">
+          <div class="card-3d-layer w-10 h-10 rounded-xl bg-pegGreen/20 text-pegGreen flex items-center justify-center font-bold text-lg mb-4">🛡️</div>
+          <h3 class="card-3d-layer font-orbitron font-bold text-base text-white mb-2">Automated Heuristic Auditing</h3>
+          <p class="card-3d-layer text-xs text-gray-400 leading-relaxed mb-4">
+            Every match settlement is logged on our public audit panel. Players can verify screen hashes, telemetry records, and referee logs for absolute match authenticity.
+          </p>
+          <div class="card-3d-layer text-[11px] font-mono text-pegGreen">Audit Status: 100% Immutable</div>
+        </div>
+
+        <div class="glass-panel p-6 rounded-2xl border border-pegCardBorder saas-3d-card">
+          <div class="card-3d-layer w-10 h-10 rounded-xl bg-pegCyan/20 text-pegCyan flex items-center justify-center font-bold text-lg mb-4">⚖️</div>
+          <h3 class="card-3d-layer font-orbitron font-bold text-base text-white mb-2">Multi-Sig Escrow Vaults</h3>
+          <p class="card-3d-layer text-xs text-gray-400 leading-relaxed mb-4">
+            Player funds are stored in isolated, multi-signature liquidity pools managed by Paystack, Flutterwave, and Tier-1 banking partners. Unused stakes are 100% liquid.
+          </p>
+          <div class="card-3d-layer text-[11px] font-mono text-pegCyan">Proof of Reserves: $1:1 Backed</div>
+        </div>
+
+        <div class="glass-panel p-6 rounded-2xl border border-pegCardBorder saas-3d-card">
+          <div class="card-3d-layer w-10 h-10 rounded-xl bg-pegGold/20 text-pegGold flex items-center justify-center font-bold text-lg mb-4">📜</div>
+          <h3 class="card-3d-layer font-orbitron font-bold text-base text-white mb-2">Anti-Money Laundering (AML)</h3>
+          <p class="card-3d-layer text-xs text-gray-400 leading-relaxed mb-4">
+            Compliant with Ghana Data Protection Act, GDPR, and international KYC standards. Your personal data is encrypted using AES-256-GCM hardware keys.
+          </p>
+          <div class="card-3d-layer text-[11px] font-mono text-pegGold">Data Standard: AES-256 Encrypted</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- COMMERCIAL ADVERTISEMENTS & SPONSOR LEADERBOARD HUB -->
+    <section id="ads-leaderboard" class="max-w-7xl mx-auto px-4 lg:px-8 py-16 peg-scroll-3d">
+      <div class="glass-panel-gold p-8 rounded-3xl relative overflow-hidden">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+          <div>
+            <span class="text-pegGold text-xs font-bold font-rajdhani uppercase tracking-widest">BRAND SPONSORSHIP NETWORK</span>
+            <h2 class="font-orbitron font-bold text-2xl md:text-3xl text-white mt-1">Commercial Videos & Ads Leaderboard</h2>
+            <p class="text-xs text-gray-400 mt-1">Watch verified sponsor video spots to earn free PEG game tokens or submit custom brand campaigns.</p>
+          </div>
+          <button onclick="openAdSubmissionModal()" class="px-5 py-2.5 bg-pegGold text-black font-rajdhani font-bold text-xs rounded-xl hover:brightness-110 shadow-neon-gold">
+            + Submit Brand Campaign
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-sans">
+            <thead class="bg-pegBg text-gray-400 font-orbitron uppercase border-b border-pegCardBorder">
+              <tr>
+                <th class="p-3">Rank</th>
+                <th class="p-3">Sponsor / Campaign Name</th>
+                <th class="p-3">Ad Format</th>
+                <th class="p-3">Total Views</th>
+                <th class="p-3">Player Reward</th>
+                <th class="p-3 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-pegCardBorder font-mono">
+              <tr class="hover:bg-pegBg/60">
+                <td class="p-3 text-pegGold font-bold font-orbitron">🥇 #1</td>
+                <td class="p-3 text-white font-bold font-sans">RedBull Gaming Arena Ghana 2026</td>
+                <td class="p-3 text-pegCyan">3D Video Spot (15s)</td>
+                <td class="p-3 text-gray-300">1,420,000</td>
+                <td class="p-3 text-pegGreen font-bold">+50 PEG Tokens</td>
+                <td class="p-3 text-right">
+                  <button onclick="triggerAdPlayback('RedBull Arena', 15, 50)" class="px-3 py-1.5 bg-pegGreen/10 border border-pegGreen text-pegGreen rounded hover:bg-pegGreen hover:text-black font-bold">Watch & Earn ⚡</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-pegBg/60">
+                <td class="p-3 text-gray-300 font-bold font-orbitron">🥈 #2</td>
+                <td class="p-3 text-white font-bold font-sans">Logitech G Pro Wireless Showcase</td>
+                <td class="p-3 text-pegCyan">Interactive Banner</td>
+                <td class="p-3 text-gray-300">980,400</td>
+                <td class="p-3 text-pegGreen font-bold">+30 PEG Tokens</td>
+                <td class="p-3 text-right">
+                  <button onclick="triggerAdPlayback('Logitech G Pro', 10, 30)" class="px-3 py-1.5 bg-pegGreen/10 border border-pegGreen text-pegGreen rounded hover:bg-pegGreen hover:text-black font-bold">Watch & Earn ⚡</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-pegBg/60">
+                <td class="p-3 text-amber-600 font-bold font-orbitron">🥉 #3</td>
+                <td class="p-3 text-white font-bold font-sans">MTN MoMo Esports Tournament Cup</td>
+                <td class="p-3 text-pegCyan">Video Spot (30s)</td>
+                <td class="p-3 text-gray-300">750,100</td>
+                <td class="p-3 text-pegGreen font-bold">+25 PEG Tokens</td>
+                <td class="p-3 text-right">
+                  <button onclick="triggerAdPlayback('MTN MoMo', 30, 25)" class="px-3 py-1.5 bg-pegGreen/10 border border-pegGreen text-pegGreen rounded hover:bg-pegGreen hover:text-black font-bold">Watch & Earn ⚡</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-pegBg/60">
+                <td class="p-3 text-gray-400 font-bold font-orbitron">#4</td>
+                <td class="p-3 text-white font-bold font-sans">Sony PlayStation 5 Pro FIFA Series</td>
+                <td class="p-3 text-pegCyan">3D Interactive Unit</td>
+                <td class="p-3 text-gray-300">520,800</td>
+                <td class="p-3 text-pegGreen font-bold">+20 PEG Tokens</td>
+                <td class="p-3 text-right">
+                  <button onclick="triggerAdPlayback('PlayStation 5 Pro', 15, 20)" class="px-3 py-1.5 bg-pegGreen/10 border border-pegGreen text-pegGreen rounded hover:bg-pegGreen hover:text-black font-bold">Watch & Earn ⚡</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- FREQUENTLY ASKED QUESTIONS (FAQ) ACCORDION -->
+    <section id="faq-section" class="max-w-5xl mx-auto px-4 lg:px-8 py-16 peg-scroll-3d">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="text-pegGreen text-xs font-bold font-rajdhani uppercase tracking-widest">KNOWLEDGE BASE</span>
+        <h2 class="font-orbitron font-bold text-3xl text-white mt-1">Frequently Asked Questions</h2>
+        <p class="text-xs text-gray-400 mt-2">Everything you need to know about competing, escrow security, and withdrawals on PEG.</p>
+      </div>
+
+      <div class="space-y-4">
+        
+        <div class="glass-panel rounded-2xl border border-pegCardBorder overflow-hidden">
+          <button onclick="toggleFaq('faq-1')" class="w-full p-5 text-left font-orbitron font-bold text-sm text-white flex justify-between items-center hover:text-pegGreen transition-colors">
+            <span>How does PEG guarantee that my deposit is safe in escrow?</span>
+            <span id="faq-1-icon" class="text-lg">+</span>
+          </button>
+          <div id="faq-1" class="hidden px-5 pb-5 text-xs text-gray-400 leading-relaxed font-sans border-t border-pegCardBorder/50 pt-3">
+            All stakes are held in automated multi-signature escrow accounts powered by Paystack and Flutterwave. The platform never holds or diverts player funds into proprietary operational accounts. Payouts occur automatically when match evidence is verified.
+          </div>
+        </div>
+
+        <div class="glass-panel rounded-2xl border border-pegCardBorder overflow-hidden">
+          <button onclick="toggleFaq('faq-2')" class="w-full p-5 text-left font-orbitron font-bold text-sm text-white flex justify-between items-center hover:text-pegGreen transition-colors">
+            <span>How fast are withdrawals processed to Mobile Money / Bank Accounts?</span>
+            <span id="faq-2-icon" class="text-lg">+</span>
+          </button>
+          <div id="faq-2" class="hidden px-5 pb-5 text-xs text-gray-400 leading-relaxed font-sans border-t border-pegCardBorder/50 pt-3">
+            Mobile Money withdrawals in Ghana, Nigeria, and Kenya are processed instantly (under 60 seconds) via direct Paystack and Flutterwave API transfers. Bank transfers are typically completed within 15 to 30 minutes depending on network clearing.
+          </div>
+        </div>
+
+        <div class="glass-panel rounded-2xl border border-pegCardBorder overflow-hidden">
+          <button onclick="toggleFaq('faq-3')" class="w-full p-5 text-left font-orbitron font-bold text-sm text-white flex justify-between items-center hover:text-pegGreen transition-colors">
+            <span>What happens if an opponent cheats or submits a fake result?</span>
+            <span id="faq-3-icon" class="text-lg">+</span>
+          </button>
+          <div id="faq-3" class="hidden px-5 pb-5 text-xs text-gray-400 leading-relaxed font-sans border-t border-pegCardBorder/50 pt-3">
+            Our Anti-Cheat Dispute Engine requires players to submit screenshot or video evidence. Submitting fraudulent evidence results in an immediate permanent ban, forfeiture of account balance, and account blacklisting across our affiliate network.
+          </div>
+        </div>
+
+        <div class="glass-panel rounded-2xl border border-pegCardBorder overflow-hidden">
+          <button onclick="toggleFaq('faq-4')" class="w-full p-5 text-left font-orbitron font-bold text-sm text-white flex justify-between items-center hover:text-pegGreen transition-colors">
+            <span>Are there any platform commissions or fees on winnings?</span>
+            <span id="faq-4-icon" class="text-lg">+</span>
+          </button>
+          <div id="faq-4" class="hidden px-5 pb-5 text-xs text-gray-400 leading-relaxed font-sans border-t border-pegCardBorder/50 pt-3">
+            PEG charges a standard 10% platform fee on match prize pools. Tournament organizers and creators receive up to 80% revenue share of platform fees when hosting custom community tournaments through the Creator Hub.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CREATOR HUB PREVIEW -->
+    <section id="creator-hub" class="max-w-7xl mx-auto px-4 lg:px-8 py-16 peg-scroll-3d">
+      <div class="glass-panel p-8 rounded-3xl border border-pegCardBorder flex flex-col md:flex-row items-center justify-between gap-6 saas-3d-card">
+        <div>
+          <span class="text-pegPurple text-xs font-bold font-rajdhani uppercase tracking-widest">MONETIZE YOUR COMMUNITY</span>
+          <h2 class="font-orbitron font-bold text-2xl md:text-3xl text-white mt-1">PEG Creator Hub</h2>
+          <p class="text-xs text-gray-400 mt-2 max-w-xl">
+            Streamers, guild leaders, and organizers can host custom tournaments, set entry stakes, and earn up to 80% platform fee revenue shares.
+          </p>
+        </div>
+        <button onclick="alert('Creator Application Form requested. Complete Tier-2 verification first.')" class="px-6 py-3 bg-pegPurple text-white font-rajdhani font-bold text-xs rounded-xl hover:bg-purple-600">
+          APPLY FOR CREATOR STATUS ➔
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-black border-t border-pegCardBorder py-12 px-4 lg:px-8 relative z-10 text-xs text-gray-400">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      <div>
+        <div class="font-orbitron font-bold text-lg text-white mb-2">PLAYFUL EARTH GAMERS</div>
+        <p class="text-[11px] leading-relaxed text-gray-500">
+          The premier global competitive skill-gaming and match escrow ecosystem. Built for fair play, cryptographic accuracy, and instant local payouts.
+        </p>
+      </div>
+      <div>
+        <h4 class="font-orbitron font-bold text-white mb-3">LEGAL & COMPLIANCE</h4>
+        <ul class="space-y-1.5 text-[11px]">
+          <li><a href="#" class="hover:text-pegGreen">Terms of Service</a></li>
+          <li><a href="#" class="hover:text-pegGreen">Privacy & Cookie Policy</a></li>
+          <li><a href="#" class="hover:text-pegGreen">Responsible Skill Gaming</a></li>
+          <li><a href="#" class="hover:text-pegGreen">Anti-Money Laundering (AML)</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-orbitron font-bold text-white mb-3">SECURITY ARCHITECTURE</h4>
+        <ul class="space-y-1.5 text-[11px]">
+          <li><a href="#" class="hover:text-pegGreen">AES-256 Wallet Security</a></li>
+          <li><a href="#" class="hover:text-pegGreen">Anti-Cheat Verdict Panel</a></li>
+          <li><a href="#" class="hover:text-pegGreen">Paystack Webhook Verification</a></li>
+          <li><a href="#" class="hover:text-pegGreen">KYC / ID Ingestion Rules</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-orbitron font-bold text-white mb-3">SYSTEM STATUS</h4>
+        <div class="space-y-2 text-[11px] font-mono">
+          <div class="flex justify-between"><span>Firebase Auth (Compat):</span> <span class="text-pegGreen" id="footer-firebase-status">ACTIVE</span></div>
+          <div class="flex justify-between"><span>Paystack Engine:</span> <span class="text-pegGreen">ONLINE</span></div>
+          <div class="flex justify-between"><span>Flutterwave Switch:</span> <span class="text-pegGreen">ONLINE</span></div>
+          <div class="flex justify-between"><span>Stripe / Web3:</span> <span class="text-pegGreen">ONLINE</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto pt-6 border-t border-pegCardBorder flex flex-col md:flex-row items-center justify-between text-[11px] text-gray-500">
+      <div>© 2026 Playful Earth Gamers (PEG). All rights reserved.</div>
+      <div class="mt-2 md:mt-0 font-mono">Build v3.1.0 (3D Scroll Splash & Firebase Compat Mode)</div>
+    </div>
+  </footer>
+
+  <!-- DYNAMIC MODAL CONTAINER LAYER -->
+  <div id="globalModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="glass-panel max-w-lg w-full rounded-2xl p-6 border border-pegGreen shadow-neon-green relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeGlobalModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-xl">&times;</button>
+      <div id="modalContentTarget"></div>
+    </div>
+  </div>
+
+  <!-- PRODUCTION JAVASCRIPT CORE -->
+  <script>
+    // --- 1. FIREBASE COMPATIBILITY MODE INITIALIZATION ---
+    // Connects seamlessly to your live Firebase project credentials via v9 Compat SDK
+    const firebaseConfig = {
+      apiKey: "AIzaSy_YOUR_LIVE_FIREBASE_API_KEY",
+      authDomain: "peg-production.firebaseapp.com",
+      databaseURL: "https://peg-production-default-rtdb.firebaseio.com",
+      projectId: "peg-production",
+      storageBucket: "peg-production.appspot.com",
+      messagingSenderId: "1234567890",
+      appId: "1:1234567890:web:abcdef123456"
+    };
+
+    let firebaseApp = null;
+    let auth = null;
+    let db = null;
+
+    try {
+      if (typeof firebase !== 'undefined') {
+        if (!firebase.apps.length) {
+          firebaseApp = firebase.initializeApp(firebaseConfig);
+        } else {
+          firebaseApp = firebase.app();
+        }
+        auth = firebase.auth();
+        db = firebase.firestore();
+
+        console.log("🔥 Firebase Compatibility Mode Successfully Initialized.");
+        
+        // Monitor Live Firebase Auth State
+        auth.onAuthStateChanged((user) => {
+          if (user) {
+            APP_STATE.user.email = user.email || "";
+            APP_STATE.user.username = user.displayName || user.email.split('@')[0];
+            APP_STATE.user.registered = true;
+            APP_STATE.user.verifiedTier = user.emailVerified ? 2 : 1;
+            
+            document.getElementById('user-status-badge').innerHTML = `
+              <span class="w-2 h-2 rounded-full bg-pegGreen"></span>
+              <span class="text-gray-400">Firebase User: <strong class="text-white">${APP_STATE.user.username} (Tier ${APP_STATE.user.verifiedTier})</strong></span>
+            `;
+            
+            // Sync user balance from Firestore live document
+            db.collection('users').doc(user.uid).onSnapshot((doc) => {
+              if (doc.exists && doc.data().wallet) {
+                APP_STATE.user.wallet = doc.data().wallet;
+                updateWalletUI();
+              }
+            });
+          }
+        });
+      }
+    } catch (e) {
+      console.warn("Firebase initialized in fallback mode:", e);
+      document.getElementById('firebase-status-text').innerText = "FALLBACK MODE";
+      document.getElementById('firebase-status-text').className = "text-yellow-500";
+    }
+
+    // --- 2. GLOBAL STATE STORE ---
+    const APP_STATE = {
+      user: {
+        registered: false,
+        verifiedTier: 0,
+        username: "Guest_Gamer",
+        email: "",
+        tokens: 0,
+        wallet: { available: 0.00, escrow: 0.00, rewards: 0.00 }
+      },
+      challenges: [
+        { id: 'c1', title: 'Call of Duty: Warzone - Solos Kill Race', game: 'FPS', category: 'FPS', stake: '$10.00', prize: '$18.00', status: 'active', players: '14/16', antiCheat: 'Warzone Screenshot Ingest' },
+        { id: 'c2', title: 'EA FC 26 - 1v1 Wagering Arena', game: 'Sports', category: 'Sports', stake: '$25.00', prize: '$45.00', status: 'active', players: '2/2', antiCheat: 'Direct Result API' },
+        { id: 'c3', title: 'PUBG Mobile - Squads Survival Cup', game: 'Battle Royale', category: 'Battle Royale', stake: '$5.00', prize: '$80.00', status: 'upcoming', players: '32/64', antiCheat: 'Lobby Replay Review' },
+        { id: 'c4', title: 'Street Fighter 6 - First to 5 Wins', game: 'Fighting', category: 'Fighting', stake: '$15.00', prize: '$27.00', status: 'ended', players: '2/2', winner: 'ViperX_FPS', antiCheat: 'Verified Settlement' },
+        { id: 'c5', title: 'Rocket League - 2v2 Speed Tournament', game: 'Sports', category: 'Sports', stake: '$20.00', prize: '$70.00', status: 'upcoming', players: '8/16', antiCheat: 'Match Replay Ingest' },
+        { id: 'c6', title: 'Valorant - 1v1 Aim Duel Championship', game: 'FPS', category: 'FPS', stake: '$50.00', prize: '$90.00', status: 'ended', players: '2/2', winner: 'ApexNinja', antiCheat: 'Verified Settlement' }
+      ]
+    };
+
+    // --- 3. 3D SCROLLING FADE/SPLASH IN AND FADE/SPLASH OUT OBSERVER ENGINE ---
+    function init3DScrollObserver() {
+      const scrollElements = document.querySelectorAll('.peg-scroll-3d');
+
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px 0px -100px 0px', // Trigger dynamic entry slightly before full view
+        threshold: 0.15
+      };
+
+      const scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const target = entry.target;
+          
+          if (entry.isIntersecting) {
+            // Splash / Fade IN 3D
+            target.classList.add('peg-scroll-visible');
+            target.classList.remove('peg-scroll-exit-up');
+          } else {
+            // Determine scroll direction for smooth 3D Fade OUT UP or DOWN
+            const rect = target.getBoundingClientRect();
+            if (rect.top < 0) {
+              // Scrolled UP out of viewport
+              target.classList.remove('peg-scroll-visible');
+              target.classList.add('peg-scroll-exit-up');
+            } else {
+              // Scrolled DOWN out of viewport
+              target.classList.remove('peg-scroll-visible', 'peg-scroll-exit-up');
+            }
+          }
+        });
+      }, observerOptions);
+
+      scrollElements.forEach(el => scrollObserver.observe(el));
+    }
+
+    // --- 4. THREE.JS BACKGROUND SCENE ---
+    function initThreeScene() {
+      const container = document.getElementById('webgl-canvas');
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
+
+      const count = 600;
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(count * 3);
+      const colors = new Float32Array(count * 3);
+
+      for (let i = 0; i < count * 3; i += 3) {
+        positions[i] = (Math.random() - 0.5) * 22;
+        positions[i + 1] = (Math.random() - 0.5) * 22;
+        positions[i + 2] = (Math.random() - 0.5) * 22;
+
+        colors[i] = 0.0;
+        colors[i + 1] = 1.0;
+        colors[i + 2] = 0.4;
+      }
+
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      const material = new THREE.PointsMaterial({
+        size: 0.035,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.5
+      });
+
+      const points = new THREE.Points(geometry, material);
+      scene.add(points);
+      camera.position.z = 6;
+
+      function renderLoop() {
+        requestAnimationFrame(renderLoop);
+        points.rotation.y += 0.0008;
+        points.rotation.x += 0.0004;
+        renderer.render(scene, camera);
+      }
+      renderLoop();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    }
+
+    // --- 5. 3D CARD MOUSE-TILT ENGINE ---
+    function init3DTiltCards() {
+      const cardContainers = document.querySelectorAll('.tilt-card-container');
+      
+      cardContainers.forEach(container => {
+        const cards = container.querySelectorAll('.saas-3d-card');
+        
+        cards.forEach(card => {
+          card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = ((y - centerY) / centerY) * -12;
+            const rotateY = ((x - centerX) / centerX) * 12;
+
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+          });
+
+          card.addEventListener('mouseleave', () => {
+            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+          });
+        });
+      });
+    }
+
+    // --- 6. 3D STORYTELLING ENGINE ---
+    const STORY_DATA = {
+      1: {
+        title: "STAGE 1: ESCROW STAKE LOCKING",
+        icon: "🔒",
+        heading: "Cryptographic Vault Reservation",
+        desc: "Both players' entry stakes are simultaneously tokenized and held in zero-trust multi-signature vault contracts, removing financial default risk before the match begins.",
+        color: "pegGreen",
+        progress: "25%"
+      },
+      2: {
+        title: "STAGE 2: LOBBY DISPATCH & TOKEN",
+        icon: "🎮",
+        heading: "Secure Lobby Key Distribution",
+        desc: "Encrypted match join codes and server credentials are sent exclusively to verified participants with automated anti-cheat monitoring hooks attached.",
+        color: "pegCyan",
+        progress: "50%"
+      },
+      3: {
+        title: "STAGE 3: HEURISTIC PROOF INGESTION",
+        icon: "⚡",
+        heading: "AI Match Result Verification",
+        desc: "Game telemetry, score APIs, and player screenshot proofs are ingested into our heuristic verdict engine to detect anomalies or illegal modifications.",
+        color: "pegGold",
+        progress: "75%"
+      },
+      4: {
+        title: "STAGE 4: INSTANT WEBHOOK PAYOUT",
+        icon: "💸",
+        heading: "Automated Multi-Gateway Payout",
+        desc: "Upon verdict lock, the smart contract settles the escrow pool instantly into the winner's Paystack Mobile Money or Flutterwave Bank account.",
+        color: "pegPurple",
+        progress: "100%"
+      }
+    };
+
+    function setStoryStep(stepNumber) {
+      document.querySelectorAll('.story-step').forEach(step => {
+        step.classList.remove('active-step');
+      });
+      document.getElementById(`story-step-${stepNumber}`).classList.add('active-step');
+
+      const data = STORY_DATA[stepNumber];
+      document.getElementById('story-visual-header').innerText = data.title;
+      document.getElementById('story-progress-bar').style.width = data.progress;
+
+      const bodyTarget = document.getElementById('story-visual-body');
+      bodyTarget.innerHTML = `
+        <div class="w-20 h-20 mx-auto rounded-2xl bg-${data.color}/10 border border-${data.color}/40 flex items-center justify-center text-3xl mb-4 animate-bounce">
+          ${data.icon}
+        </div>
+        <h3 class="font-orbitron font-bold text-xl text-white mb-2">${data.heading}</h3>
+        <p class="text-xs text-gray-400 max-w-md mx-auto leading-relaxed">
+          ${data.desc}
+        </p>
+      `;
+    }
+
+    // --- 7. CHALLENGE MATRIX RENDER ENGINE ---
+    function renderChallengeMatrix(filter = 'all') {
+      const target = document.getElementById('challenge-matrix-container');
+      target.innerHTML = '';
+
+      const filtered = APP_STATE.challenges.filter(item => {
+        if (filter === 'all') return true;
+        return item.status === filter;
+      });
+
+      filtered.forEach(item => {
+        let statusBadge = '';
+        if (item.status === 'active') {
+          statusBadge = `<span class="px-2 py-0.5 rounded bg-pegGreen/20 text-pegGreen text-[10px] font-bold border border-pegGreen/30">● LIVE NOW</span>`;
+        } else if (item.status === 'upcoming') {
+          statusBadge = `<span class="px-2 py-0.5 rounded bg-pegCyan/20 text-pegCyan text-[10px] font-bold border border-pegCyan/30">UPCOMING</span>`;
+        } else {
+          statusBadge = `<span class="px-2 py-0.5 rounded bg-gray-500/20 text-gray-400 text-[10px] font-bold border border-gray-500/30">ENDED / SETTLED</span>`;
+        }
+
+        const cardHtml = `
+          <div class="glass-panel p-5 rounded-2xl border border-pegCardBorder saas-3d-card flex flex-col justify-between">
+            <div>
+              <div class="card-3d-layer flex justify-between items-center mb-3">
+                <span class="text-[10px] font-mono text-gray-400 uppercase tracking-widest">${item.game}</span>
+                ${statusBadge}
+              </div>
+              <h3 class="card-3d-layer font-orbitron font-bold text-base text-white mb-2">${item.title}</h3>
+              <p class="card-3d-layer text-[11px] text-gray-400 mb-4">Anti-Cheat Protocol: <strong class="text-gray-300">${item.antiCheat}</strong></p>
+            </div>
+
+            <div class="card-3d-layer pt-4 border-t border-pegCardBorder font-mono">
+              <div class="flex justify-between text-xs mb-2">
+                <span class="text-gray-400">Entry Stake: <strong class="text-white">${item.stake}</strong></span>
+                <span class="text-gray-400">Prize Pool: <strong class="text-pegGreen">${item.prize}</strong></span>
+              </div>
+              <div class="flex justify-between text-[11px] text-gray-500 mb-4">
+                <span>Slots: ${item.players}</span>
+                ${item.winner ? `<span class="text-pegGold">Winner: ${item.winner}</span>` : ''}
+              </div>
+              <button onclick="enterChallenge('${item.id}')" class="w-full py-2.5 bg-pegCardBg border border-pegCardBorder hover:border-pegGreen text-white font-rajdhani font-bold rounded-xl text-xs transition-all">
+                ${item.status === 'active' ? 'ENTER MATCH ARENA ➔' : item.status === 'upcoming' ? 'RESERVE SLOT ➔' : 'VIEW MATCH AUDIT ➔'}
+              </button>
+            </div>
+          </div>
+        `;
+        target.innerHTML += cardHtml;
+      });
+
+      init3DTiltCards();
+    }
+
+    function filterChallenges(filter) {
+      document.querySelectorAll('.challenge-filter-btn').forEach(btn => {
+        btn.classList.remove('bg-pegGreen', 'text-black');
+        btn.classList.add('text-gray-400');
+      });
+      event.target.classList.add('bg-pegGreen', 'text-black');
+      event.target.classList.remove('text-gray-400');
+      renderChallengeMatrix(filter);
+    }
+
+    // --- 8. FAQ ACCORDION ENGINE ---
+    function toggleFaq(faqId) {
+      const target = document.getElementById(faqId);
+      const icon = document.getElementById(`${faqId}-icon`);
+
+      if (target.classList.contains('hidden')) {
+        target.classList.remove('hidden');
+        icon.innerText = '-';
+      } else {
+        target.classList.add('hidden');
+        icon.innerText = '+';
+      }
+    }
+
+    // --- 9. FIREBASE REGISTRATION & KYC PIPELINE ---
+    function openRegistrationFlow() {
+      const target = document.getElementById('modalContentTarget');
+      document.getElementById('globalModal').classList.remove('hidden');
+
+      target.innerHTML = `
+        <div class="text-center mb-6">
+          <span class="text-pegGreen font-rajdhani font-bold text-xs uppercase tracking-widest">FIREBASE COMPAT REGISTRATION</span>
+          <h3 class="font-orbitron font-bold text-2xl text-white mt-1">Create PEG Account</h3>
+        </div>
+
+        <form onsubmit="handleRegistrationSubmit(event)" class="space-y-3 font-sans">
+          <div>
+            <label class="block text-[11px] font-mono text-gray-400 mb-1">USERNAME / GAMER TAG</label>
+            <input type="text" required id="reg-username" placeholder="e.g. CyberViper" class="w-full bg-pegBg border border-pegCardBorder rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-pegGreen">
+          </div>
+          <div>
+            <label class="block text-[11px] font-mono text-gray-400 mb-1">EMAIL ADDRESS</label>
+            <input type="email" required id="reg-email" placeholder="gamer@playfulearth.com" class="w-full bg-pegBg border border-pegCardBorder rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-pegGreen">
+          </div>
+          <div>
+            <label class="block text-[11px] font-mono text-gray-400 mb-1">PASSWORD</label>
+            <input type="password" required id="reg-pass" placeholder="••••••••••••" class="w-full bg-pegBg border border-pegCardBorder rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-pegGreen">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-mono text-gray-400 mb-1">COUNTRY</label>
+              <select id="reg-country" class="w-full bg-pegBg border border-pegCardBorder rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-pegGreen">
+                <option value="GH">Ghana 🇬🇭</option>
+                <option value="NG">Nigeria 🇳🇬</option>
+                <option value="KE">Kenya 🇰🇪</option>
+                <option value="ZA">South Africa 🇿🇦</option>
+                <option value="US">United States / Global 🌍</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono text-gray-400 mb-1">DATE OF BIRTH</label>
+              <input type="date" required id="reg-dob" class="w-full bg-pegBg border border-pegCardBorder rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-pegGreen">
+            </div>
+          </div>
+          <button type="submit" class="w-full gradient-btn py-3 rounded-xl text-xs font-bold mt-2">REGISTER WITH FIREBASE AUTH ➔</button>
+        </form>
+      `;
+    }
+
+    async function handleRegistrationSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('reg-email').value;
+      const pass = document.getElementById('reg-pass').value;
+      const username = document.getElementById('reg-username').value;
+
+      try {
+        if (auth) {
+          const res = await auth.createUserWithEmailAndPassword(email, pass);
+          await res.user.updateProfile({ displayName: username });
+          
+          if (db) {
+            await db.collection('users').doc(res.user.uid).set({
+              username: username,
+              email: email,
+              verifiedTier: 1,
+              wallet: { available: 0.00, escrow: 0.00, rewards: 0.00 },
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          }
+          alert("Firebase Registration Complete! Welcome to PEG.");
+        } else {
+          APP_STATE.user.username = username;
+          APP_STATE.user.email = email;
+          APP_STATE.user.registered = true;
+          alert("Account created in fallback mode.");
+        }
+        closeGlobalModal();
+      } catch (err) {
+        alert("Registration Error: " + err.message);
+      }
+    }
+
+    // --- 10. COMMERCIAL AD PLAYBACK & SPONSORSHIP SYSTEM ---
+    function triggerAdPlayback(campaignName, durationSeconds, tokenReward) {
+      const target = document.getElementById('modalContentTarget');
+      document.getElementById('globalModal').classList.remove('hidden');
+
+      let timer = durationSeconds;
+
+      target.innerHTML = `
+        <div class="text-center mb-4">
+          <span class="text-pegGold font-rajdhani font-bold text-xs uppercase tracking-widest">SPONSOR SPOTLIGHT: ${campaignName}</span>
+          <h3 class="font-orbitron font-bold text-xl text-white mt-1">Watching Commercial Stream</h3>
+        </div>
+
+        <!-- Simulated 3D Video Stream Container -->
+        <div class="bg-black border border-pegGold/40 rounded-2xl p-6 text-center relative overflow-hidden mb-4">
+          <div class="w-16 h-16 mx-auto rounded-full bg-pegGold/20 text-pegGold flex items-center justify-center text-2xl animate-spin mb-3">🎬</div>
+          <p class="font-mono text-xs text-white">Stream Quality: <strong class="text-pegGreen">1080p WebGL Accelerated</strong></p>
+          <div class="mt-4 font-orbitron font-black text-3xl text-pegGold" id="ad-timer-countdown">${timer}s</div>
+          <p class="text-[10px] text-gray-400 mt-1">Remain on screen to credit reward tokens</p>
+        </div>
+
+        <button id="claim-ad-btn" disabled class="w-full py-3 bg-gray-600 text-gray-400 font-rajdhani font-bold rounded-xl text-xs cursor-not-allowed">
+          WATCHING SPONSOR VIDEO...
+        </button>
+      `;
+
+      const countdownInterval = setInterval(() => {
+        timer--;
+        const timerTarget = document.getElementById('ad-timer-countdown');
+        if (timerTarget) timerTarget.innerText = `${timer}s`;
+
+        if (timer <= 0) {
+          clearInterval(countdownInterval);
+          const claimBtn = document.getElementById('claim-ad-btn');
+          if (claimBtn) {
+            claimBtn.disabled = false;
+            claimBtn.className = "w-full gradient-btn py-3 rounded-xl text-xs font-bold shadow-neon-green cursor-pointer";
+            claimBtn.innerText = `CLAIM +${tokenReward} PEG REWARD TOKENS ⚡`;
+            claimBtn.onclick = () => {
+              APP_STATE.user.tokens += tokenReward;
+              alert(`Success! +${tokenReward} PEG Tokens credited to your balance.\nTotal Tokens: ${APP_STATE.user.tokens}`);
+              closeGlobalModal();
+            };
+          }
+        }
+      }, 1000);
+    }
+
+    function openAdSubmissionModal() {
+      const target = document.getElementById('modalContentTarget');
+      document.getElementById('globalModal').classList.remove('hidden');
+
+      target.innerHTML = `
+        <div class="text-center mb-6">
+          <span class="text-pegGold font-rajdhani font-bold text-xs uppercase tracking-widest">BRAND CAMPAIGN NETWORK</span>
+          <h3 class="font-orbitron font-bold text-2xl text-white mt-1">Submit Sponsor Ad</h3>
+        </div>
+
+        <form onsubmit="alert('Brand Campaign Application Ingested. Our ad desk will contact you within 24 hours.'); closeGlobalModal();" class="space-y-3 font-sans">
+          <div>
+            <label class="block text-[11px] font-mono text-gray-400 mb-1">BRAND / ORGANIZATION NAME</label>
+            <input type="text" required placeholder="e.g. RedBull Esports" class="w-full bg-pegBg border border-pegCardBorder rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-pegGold">
+          </div>
+          <div>
+            <label class="block text-[11px] font-mono text-gray-400 mb-1">CAMPAIGN FORMAT</label>
+            <select class="w-full bg-pegBg border border-pegCardBorder rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-pegGold">
+              <option>3D Video Spot (15s)</option>
+              <option>3D Video Spot (30s)</option>
+              <option>Interactive Arena Banner</option>
+              <option>Tournament Naming Rights</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-mono text-gray-400 mb-1">BUDGET ALLOCATION (USD)</label>
+            <input type="number" min="500" placeholder="$1,000" required class="w-full bg-pegBg border border-pegCardBorder rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-pegGold">
+          </div>
+          <button type="submit" class="w-full py-3 bg-pegGold text-black font-rajdhani font-bold rounded-xl text-xs hover:brightness-110 mt-2">SUBMIT CAMPAIGN FOR REVIEW ➔</button>
+        </form>
+      `;
+    }
+
+    // --- 11. MULTI-GATEWAY WALLET & ESCROW DISPATCHERS ---
+    function openWalletModal(defaultAction = 'deposit') {
+      const target = document.getElementById('modalContentTarget');
+      document.getElementById('globalModal').classList.remove('hidden');
+
+      target.innerHTML = `
+        <div class="text-center mb-6">
+          <span class="text-pegGreen font-rajdhani font-bold text-xs uppercase tracking-widest">FINANCIAL ENGINE</span>
+          <h3 class="font-orbitron font-bold text-2xl text-white mt-1">PEG Escrow Wallet</h3>
+        </div>
+
+        <div class="bg-pegBg p-4 rounded-xl border border-pegCardBorder font-mono text-xs mb-6">
+          <div class="flex justify-between mb-1"><span class="text-gray-400">Available Cash:</span> <span class="text-pegGreen font-bold">$${APP_STATE.user.wallet.available.toFixed(2)} USD</span></div>
+          <div class="flex justify-between mb-1"><span class="text-gray-400">PEG Earned Tokens:</span> <span class="text-pegGold font-bold">${APP_STATE.user.tokens} Tokens</span></div>
+          <div class="flex justify-between"><span class="text-gray-400">Locked Escrow:</span> <span class="text-pegGold font-bold">$${APP_STATE.user.wallet.escrow.toFixed(2)} USD</span></div>
+        </div>
+
+        <div class="space-y-4">
+          <label class="block text-[11px] font-mono text-gray-400">SELECT DEPOSIT GATEWAY PROVIDER</label>
+          
+          <button onclick="triggerPaystackDeposit()" class="w-full p-3 rounded-xl bg-blue-600/10 border border-blue-500/40 hover:border-blue-500 text-left flex items-center justify-between">
+            <div>
+              <strong class="text-white text-xs block font-orbitron">Paystack (Ghana / Nigeria)</strong>
+              <span class="text-[10px] text-gray-400">Supports MTN MoMo, Telecel, Card & USSD</span>
+            </div>
+            <span class="text-blue-400 font-bold text-xs">SELECT ➔</span>
+          </button>
+
+          <button onclick="triggerFlutterwaveDeposit()" class="w-full p-3 rounded-xl bg-amber-500/10 border border-amber-500/40 hover:border-amber-500 text-left flex items-center justify-between">
+            <div>
+              <strong class="text-white text-xs block font-orbitron">Flutterwave Switch</strong>
+              <span class="text-[10px] text-gray-400">Pan-African Mobile Money & LATAM</span>
+            </div>
+            <span class="text-amber-400 font-bold text-xs">SELECT ➔</span>
+          </button>
+
+          <button onclick="triggerStripeDeposit()" class="w-full p-3 rounded-xl bg-purple-600/10 border border-purple-500/40 hover:border-purple-500 text-left flex items-center justify-between">
+            <div>
+              <strong class="text-white text-xs block font-orbitron">Stripe / Web3 USDT</strong>
+              <span class="text-[10px] text-gray-400">International Visa/Mastercard & Crypto</span>
+            </div>
+            <span class="text-purple-400 font-bold text-xs">SELECT ➔</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function triggerPaystackDeposit() {
+      if (typeof PaystackPop === 'undefined') {
+        alert("Paystack SDK loading... Please retry.");
+        return;
+      }
+
+      const handler = PaystackPop.setup({
+        key: 'pk_live_YOUR_PAYSTACK_PUBLIC_KEY',
+        email: APP_STATE.user.email || 'player@playfulearth.com',
+        amount: 2000,
+        currency: 'GHS',
+        ref: 'PEG_PS_' + Math.floor((Math.random() * 1000000000) + 1),
+        callback: function(response) {
+          alert('Deposit Payment Reference Received: ' + response.reference);
+          APP_STATE.user.wallet.available += 20.00;
+          updateWalletUI();
+          closeGlobalModal();
+        }
+      });
+      handler.openIframe();
+    }
+
+    function triggerFlutterwaveDeposit() {
+      FlutterwaveCheckout({
+        public_key: "FLWPUBK_LIVE-YOUR_FLUTTERWAVE_PUBLIC_KEY",
+        tx_ref: "PEG_FW_" + Math.floor((Math.random() * 1000000000) + 1),
+        amount: 25,
+        currency: "USD",
+        payment_options: "card, mobilemoney, ussd",
+        customer: {
+          email: APP_STATE.user.email || 'player@playfulearth.com',
+          name: APP_STATE.user.username,
+        },
+        callback: function (data) {
+          alert("Flutterwave Settlement Complete. TX Ref: " + data.transaction_id);
+          APP_STATE.user.wallet.available += 25.00;
+          updateWalletUI();
+          closeGlobalModal();
+        }
+      });
+    }
+
+    function triggerStripeDeposit() {
+      alert("Redirecting to Stripe / Web3 USDT Escrow Session...");
+      APP_STATE.user.wallet.available += 50.00;
+      updateWalletUI();
+      closeGlobalModal();
+    }
+
+    function updateWalletUI() {
+      document.getElementById('wallet-preview-balance').innerHTML = `$${APP_STATE.user.wallet.available.toFixed(2)} <span class="text-xs text-gray-500 font-normal">USD</span>`;
+      document.getElementById('wallet-preview-available').innerText = `$${APP_STATE.user.wallet.available.toFixed(2)}`;
+    }
+
+    function enterChallenge(id) {
+      if (!APP_STATE.user.registered && (!auth || !auth.currentUser)) {
+        alert("Zero-Trust Security Enforcement: You must create a verified account to enter arena matches.");
+        openRegistrationFlow();
+        return;
+      }
+      alert(`Match Entry Request for [ID: ${id}] processed.\nEscrow funds locked until result verification.`);
+    }
+
+    function openDisputeModal() {
+      const target = document.getElementById('modalContentTarget');
+      document.getElementById('globalModal').classList.remove('hidden');
+
+      target.innerHTML = `
+        <div class="text-center mb-6">
+          <span class="text-pegRed font-rajdhani font-bold text-xs uppercase tracking-widest">FAIR PLAY VERDICT PANEL</span>
+          <h3 class="font-orbitron font-bold text-2xl text-white mt-1">Submit Anti-Cheat Proof</h3>
+        </div>
+
+        <form onsubmit="alert('Evidence Ingested. Moderators will issue verdict within 15 mins.'); closeGlobalModal();" class="space-y-3 font-sans">
+          <div>
+            <label class="block text-[11px] font-mono text-gray-400 mb-1">MATCH LOBBY ID</label>
+            <input type="text" required placeholder="LOBBY-1092" class="w-full bg-pegBg border border-pegCardBorder rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-pegRed">
+          </div>
+          <div>
+            <label class="block text-[11px] font-mono text-gray-400 mb-1">EVIDENCE SCREENSHOT / STREAM CLIP</label>
+            <input type="file" required accept="image/*,video/*" class="w-full bg-pegBg border border-pegCardBorder rounded-xl px-3 py-2 text-xs text-gray-400">
+          </div>
+          <button type="submit" class="w-full py-3 bg-pegRed text-white font-rajdhani font-bold rounded-xl text-xs hover:bg-red-600">SUBMIT TO MODERATOR QUEUE ➔</button>
+        </form>
+      `;
+    }
+
+    function closeGlobalModal() {
+      document.getElementById('globalModal').classList.add('hidden');
+    }
+
+    // --- 12. DOM LOAD INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      initThreeScene();
+      init3DTiltCards();
+      init3DScrollObserver();
+      renderChallengeMatrix('all');
+    });
+  </script>
+</body>
+</html>
