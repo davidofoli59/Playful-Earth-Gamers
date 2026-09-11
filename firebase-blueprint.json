@@ -1,0 +1,108 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with server-controlled role and payment status",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "format": "email", "maxLength": 128 },
+        "country": { "type": "string", "maxLength": 64 },
+        "accountStatus": { "type": "string", "enum": ["pending", "active", "suspended"] },
+        "emailVerified": { "type": "boolean" },
+        "paymentStatus": { "type": "string", "enum": ["unpaid", "pending", "paid", "refunded"] },
+        "membershipStatus": { "type": "string", "enum": ["none", "standard", "pro", "elite"] },
+        "membershipType": { "type": "string", "maxLength": 64 },
+        "role": { "type": "string", "enum": ["user", "creator", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role", "paymentStatus", "accountStatus"]
+    },
+    "PaymentRecord": {
+      "title": "PaymentRecord",
+      "description": "Authoritative payment records verified by backend against Paystack",
+      "type": "object",
+      "properties": {
+        "paymentId": { "type": "string", "maxLength": 128 },
+        "firebaseUid": { "type": "string", "maxLength": 128 },
+        "paystackReference": { "type": "string", "maxLength": 128 },
+        "amount": { "type": "number" },
+        "currency": { "type": "string", "maxLength": 10 },
+        "status": { "type": "string", "enum": ["initialized", "pending", "successful", "failed", "cancelled", "refunded"] },
+        "product": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "verifiedAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["paymentId", "firebaseUid", "paystackReference", "amount", "currency", "status"]
+    },
+    "PaymentEvent": {
+      "title": "PaymentEvent",
+      "description": "Idempotent payment webhook event tracking",
+      "type": "object",
+      "properties": {
+        "eventId": { "type": "string", "maxLength": 128 },
+        "event": { "type": "string", "maxLength": 100 },
+        "paystackReference": { "type": "string", "maxLength": 128 },
+        "processed": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["eventId", "event", "processed"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "System and security audit log entry",
+      "type": "object",
+      "properties": {
+        "logId": { "type": "string", "maxLength": 128 },
+        "eventType": { "type": "string", "maxLength": 100 },
+        "actorUid": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "maxLength": 50 },
+        "details": { "type": "string", "maxLength": 1000 },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["logId", "eventType", "actorUid", "timestamp"]
+    },
+    "CustomCard": {
+      "title": "CustomCard",
+      "description": "Dynamic user-created and community cards supporting text and image assets",
+      "type": "object",
+      "properties": {
+        "cardId": { "type": "string", "maxLength": 128 },
+        "authorUid": { "type": "string", "maxLength": 128 },
+        "authorName": { "type": "string", "maxLength": 100 },
+        "title": { "type": "string", "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 1500 },
+        "imageUrl": { "type": "string", "maxLength": 500 },
+        "badge": { "type": "string", "maxLength": 50 },
+        "category": { "type": "string", "maxLength": 50 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["cardId", "authorUid", "title", "description"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "UserProfile",
+      "description": "User profiles with strict ABAC and immutable privilege fields"
+    },
+    "/payments/{paymentId}": {
+      "schema": "PaymentRecord",
+      "description": "Server-authoritative payment records verified with Paystack"
+    },
+    "/paymentEvents/{eventId}": {
+      "schema": "PaymentEvent",
+      "description": "Idempotent payment webhook event records"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Security and payment audit trail"
+    },
+    "/customCards/{cardId}": {
+      "schema": "CustomCard",
+      "description": "User-created empty cards that accept text and image assets"
+    }
+  }
+}
