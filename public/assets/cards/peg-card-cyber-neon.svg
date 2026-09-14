@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 856 540" width="100%" height="100%">
+  <defs>
+    <linearGradient id="cyberNeonBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#021a14" />
+      <stop offset="40%" stop-color="#052820" />
+      <stop offset="75%" stop-color="#031515" />
+      <stop offset="100%" stop-color="#020e18" />
+    </linearGradient>
+    <linearGradient id="neonGreenBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00ff87" />
+      <stop offset="50%" stop-color="#00f0ff" />
+      <stop offset="100%" stop-color="#00ff87" />
+    </linearGradient>
+    <linearGradient id="cyberChip" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00ff87" />
+      <stop offset="50%" stop-color="#00c853" />
+      <stop offset="100%" stop-color="#004d40" />
+    </linearGradient>
+    <filter id="neonGlow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="cyberShadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="16" stdDeviation="22" flood-color="#00ff87" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Card Base -->
+  <rect x="10" y="10" width="836" height="520" rx="36" fill="url(#cyberNeonBg)" stroke="url(#neonGreenBorder)" stroke-width="3" filter="url(#cyberShadow)"/>
+
+  <!-- Cyber Circuit Trace Overlay -->
+  <g stroke="#00ff87" stroke-width="1.5" fill="none" opacity="0.25">
+    <path d="M 40 180 L 180 180 L 220 220 L 400 220" />
+    <path d="M 40 320 L 140 320 L 180 280 L 360 280" />
+    <path d="M 680 80 L 760 160 L 760 300 L 820 360" />
+    <path d="M 520 480 L 600 400 L 740 400" />
+    <circle cx="220" cy="220" r="4" fill="#00ff87" />
+    <circle cx="180" cy="280" r="4" fill="#00ff87" />
+    <circle cx="760" cy="300" r="4" fill="#00f0ff" />
+    <circle cx="600" cy="400" r="4" fill="#00ff87" />
+  </g>
+
+  <!-- Glowing Corner Accents -->
+  <path d="M 40 70 L 40 40 L 70 40" stroke="#00ff87" stroke-width="3" fill="none" filter="url(#neonGlow)"/>
+  <path d="M 816 70 L 816 40 L 786 40" stroke="#00f0ff" stroke-width="3" fill="none" filter="url(#neonGlow)"/>
+  <path d="M 40 470 L 40 500 L 70 500" stroke="#00f0ff" stroke-width="3" fill="none" filter="url(#neonGlow)"/>
+  <path d="M 816 470 L 816 500 L 786 500" stroke="#00ff87" stroke-width="3" fill="none" filter="url(#neonGlow)"/>
+
+  <!-- Header -->
+  <g transform="translate(60, 55)">
+    <rect width="48" height="48" rx="14" fill="#031c14" stroke="#00ff87" stroke-width="2"/>
+    <text x="24" y="32" font-family="'Orbitron', sans-serif" font-weight="900" font-size="20" fill="#00ff87" text-anchor="middle">⚡</text>
+    
+    <text x="64" y="32" font-family="'Orbitron', sans-serif" font-weight="900" font-size="24" fill="#ffffff" letter-spacing="3">PLAYFUL EARTH GAMERS</text>
+    <text x="64" y="47" font-family="'Rajdhani', sans-serif" font-weight="700" font-size="13" fill="#00ff87" letter-spacing="2">CYBER NEON TOURNAMENT PASS</text>
+  </g>
+
+  <!-- Contactless Wave -->
+  <g transform="translate(730, 65)" stroke="#00ff87" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.9" filter="url(#neonGlow)">
+    <path d="M 0 30 A 20 20 0 0 1 0 0" />
+    <path d="M 8 35 A 28 28 0 0 1 8 -5" />
+    <path d="M 16 40 A 36 36 0 0 1 16 -10" />
+    <path d="M 24 45 A 44 44 0 0 1 24 -15" />
+  </g>
+
+  <!-- Cyber Chip -->
+  <g transform="translate(60, 150)">
+    <rect width="90" height="70" rx="14" fill="url(#cyberChip)" stroke="#00ff87" stroke-width="2" filter="url(#neonGlow)"/>
+    <rect x="0" y="22" width="90" height="26" fill="none" stroke="#013024" stroke-width="1.5" />
+    <line x1="30" y1="0" x2="30" y2="70" stroke="#013024" stroke-width="1.5" />
+    <line x1="60" y1="0" x2="60" y2="70" stroke="#013024" stroke-width="1.5" />
+    <rect x="36" y="28" width="18" height="14" rx="4" fill="#001811" />
+  </g>
+
+  <!-- Security Hologram Seal -->
+  <g transform="translate(180, 160)">
+    <circle cx="25" cy="25" r="25" fill="#03251c" stroke="#00ff87" stroke-width="1.5" />
+    <text x="25" y="23" font-family="'Orbitron', sans-serif" font-weight="900" font-size="9" fill="#00ff87" text-anchor="middle">CYBER</text>
+    <text x="25" y="34" font-family="'Orbitron', sans-serif" font-weight="700" font-size="8" fill="#ffffff" text-anchor="middle">SHIELD</text>
+  </g>
+
+  <!-- 16-Digit Card Number -->
+  <g transform="translate(60, 290)">
+    <text x="0" y="0" font-family="'Courier New', monospace, monospace" font-weight="700" font-size="34" fill="#00ff87" letter-spacing="7" filter="url(#neonGlow)">5241  8832  1092  6549</text>
+  </g>
+
+  <!-- Card Details -->
+  <g transform="translate(60, 370)">
+    <text x="0" y="0" font-family="'Rajdhani', sans-serif" font-weight="700" font-size="11" fill="#7dd3fc" letter-spacing="2">CARDHOLDER</text>
+    <text x="0" y="24" font-family="'Orbitron', sans-serif" font-weight="700" font-size="18" fill="#ffffff" letter-spacing="2">ALEXANDER VANCE</text>
+
+    <text x="320" y="0" font-family="'Rajdhani', sans-serif" font-weight="700" font-size="11" fill="#7dd3fc" letter-spacing="2">VALID THRU</text>
+    <text x="320" y="24" font-family="'Orbitron', sans-serif" font-weight="700" font-size="18" fill="#ffffff" letter-spacing="2">11/29</text>
+
+    <text x="440" y="0" font-family="'Rajdhani', sans-serif" font-weight="700" font-size="11" fill="#7dd3fc" letter-spacing="2">ESPORTS ESCROW</text>
+    <text x="440" y="24" font-family="'Orbitron', sans-serif" font-weight="700" font-size="18" fill="#00f0ff" letter-spacing="2">VERIFIED</text>
+  </g>
+
+  <!-- Bottom Badges -->
+  <g transform="translate(640, 410)">
+    <rect width="130" height="42" rx="10" fill="#021c16" stroke="#00ff87" stroke-width="1.5"/>
+    <text x="65" y="26" font-family="'Orbitron', sans-serif" font-weight="900" font-size="13" fill="#00ff87" text-anchor="middle" letter-spacing="2">PEG PAY</text>
+    <text x="65" y="65" font-family="'Rajdhani', sans-serif" font-weight="700" font-size="11" fill="#6ee7b7" text-anchor="middle" letter-spacing="1">INSTANT CASHOUT</text>
+  </g>
+
+  <!-- Sub-Badge -->
+  <g transform="translate(60, 460)">
+    <rect width="280" height="26" rx="8" fill="#01140e" stroke="#00ff87" stroke-width="1" opacity="0.8"/>
+    <text x="140" y="17" font-family="'Rajdhani', sans-serif" font-weight="700" font-size="11" fill="#00ff87" text-anchor="middle" letter-spacing="1.5">STEAM • PSN • XBOX • PAYSTACK READY</text>
+  </g>
+</svg>

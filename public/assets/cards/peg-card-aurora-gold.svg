@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 856 540" width="100%" height="100%">
+  <defs>
+    <linearGradient id="auroraGoldBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2a1205" />
+      <stop offset="35%" stop-color="#421a08" />
+      <stop offset="70%" stop-color="#260e03" />
+      <stop offset="100%" stop-color="#140601" />
+    </linearGradient>
+    <linearGradient id="goldSunset" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffd200" />
+      <stop offset="50%" stop-color="#f7971e" />
+      <stop offset="100%" stop-color="#ff4e50" />
+    </linearGradient>
+    <linearGradient id="goldFoil" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff0aa" />
+      <stop offset="40%" stop-color="#e2b11e" />
+      <stop offset="70%" stop-color="#ffd700" />
+      <stop offset="100%" stop-color="#b8860b" />
+    </linearGradient>
+    <filter id="auroraShadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="16" stdDeviation="22" flood-color="#f7971e" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Card Base -->
+  <rect x="10" y="10" width="836" height="520" rx="36" fill="url(#auroraGoldBg)" stroke="url(#goldFoil)" stroke-width="2.5" filter="url(#auroraShadow)"/>
+
+  <!-- Radial Sunset Flare -->
+  <circle cx="720" cy="120" r="180" fill="url(#goldSunset)" opacity="0.25" filter="blur(30px)"/>
+
+  <!-- Guilloche Laser Wave Lines -->
+  <g stroke="url(#goldFoil)" stroke-width="1" fill="none" opacity="0.2">
+    <path d="M 0 200 Q 200 120, 400 240 T 800 160" />
+    <path d="M 0 220 Q 200 140, 400 260 T 800 180" />
+    <path d="M 0 240 Q 200 160, 400 280 T 800 200" />
+    <path d="M 0 260 Q 200 180, 400 300 T 800 220" />
+  </g>
+
+  <!-- Header -->
+  <g transform="translate(60, 55)">
+    <rect width="48" height="48" rx="14" fill="#2d1305" stroke="#ffd700" stroke-width="2"/>
+    <text x="24" y="32" font-family="'Orbitron', sans-serif" font-weight="900" font-size="20" fill="#ffd700" text-anchor="middle">👑</text>
+    
+    <text x="64" y="32" font-family="'Orbitron', sans-serif" font-weight="900" font-size="24" fill="#ffffff" letter-spacing="3">PLAYFUL EARTH GAMERS</text>
+    <text x="64" y="47" font-family="'Rajdhani', sans-serif" font-weight="700" font-size="13" fill="#f7971e" letter-spacing="2">AURORA GOLD TOURNAMENT MASTER</text>
+  </g>
+
+  <!-- Contactless Wave -->
+  <g transform="translate(730, 65)" stroke="url(#goldFoil)" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.9">
+    <path d="M 0 30 A 20 20 0 0 1 0 0" />
+    <path d="M 8 35 A 28 28 0 0 1 8 -5" />
+    <path d="M 16 40 A 36 36 0 0 1 16 -10" />
+    <path d="M 24 45 A 44 44 0 0 1 24 -15" />
+  </g>
+
+  <!-- Gold Smart Chip -->
+  <g transform="translate(60, 150)">
+    <rect width="90" height="70" rx="14" fill="url(#goldFoil)" stroke="#664604" stroke-width="1.5" />
+    <rect x="0" y="22" width="90" height="26" fill="none" stroke="#664604" stroke-width="1" />
+    <line x1="30" y1="0" x2="30" y2="70" stroke="#664604" stroke-width="1" />
+    <line x1="60" y1="0" x2="60" y2="70" stroke="#664604" stroke-width="1" />
+    <rect x="36" y="28" width="18" height="14" rx="4" fill="#3a2500" />
+  </g>
+
+  <!-- Shield Stamp -->
+  <g transform="translate(180, 160)">
+    <circle cx="25" cy="25" r="25" fill="#3d1c04" stroke="#f7971e" stroke-width="1.5" />
+    <text x="25" y="23" font-family="'Orbitron', sans-serif" font-weight="900" font-size="9" fill="#ffd700" text-anchor="middle">MASTER</text>
+    <text x="25" y="34" font-family="'Orbitron', sans-serif" font-weight="700" font-size="8" fill="#ffffff" text-anchor="middle">PASS</text>
+  </g>
+
+  <!-- 16-Digit Card Number -->
+  <g transform="translate(60, 290)">
+    <text x="0" y="0" font-family="'Courier New', monospace, monospace" font-weight="700" font-size="34" fill="url(#goldFoil)" letter-spacing="7">4109  7723  9051  3320</text>
+  </g>
+
+  <!-- Card Details -->
+  <g transform="translate(60, 370)">
+    <text x="0" y="0" font-family="'Rajdhani', sans-serif" font-weight="700" font-size="11" fill="#fed7aa" letter-spacing="2">CARDHOLDER</text>
+    <text x="0" y="24" font-family="'Orbitron', sans-serif" font-weight="700" font-size="18" fill="#ffffff" letter-spacing="2">NOVA ESPORTS CLAN</text>
+
+    <text x="320" y="0" font-family="'Rajdhani', sans-serif" font-weight="700" font-size="11" fill="#fed7aa" letter-spacing="2">VALID THRU</text>
+    <text x="320" y="24" font-family="'Orbitron', sans-serif" font-weight="700" font-size="18" fill="#ffffff" letter-spacing="2">04/31</text>
+
+    <text x="440" y="0" font-family="'Rajdhani', sans-serif" font-weight="700" font-size="11" fill="#fed7aa" letter-spacing="2">TIER STATUS</text>
+    <text x="440" y="24" font-family="'Orbitron', sans-serif" font-weight="700" font-size="18" fill="#ffd700" letter-spacing="2">CHAMPION</text>
+  </g>
+
+  <!-- Bottom Badges -->
+  <g transform="translate(640, 410)">
+    <!-- Master hologram circles -->
+    <circle cx="45" cy="40" r="32" fill="#f7971e" opacity="0.9" />
+    <circle cx="85" cy="40" r="32" fill="#ffd700" opacity="0.85" />
+    <text x="65" y="46" font-family="'Orbitron', sans-serif" font-weight="900" font-size="12" fill="#140601" text-anchor="middle">VIP</text>
+    <text x="65" y="90" font-family="'Rajdhani', sans-serif" font-weight="700" font-size="11" fill="#fed7aa" text-anchor="middle" letter-spacing="1">UNLIMITED GAMER PASS</text>
+  </g>
+
+  <!-- Multi-Currency Micro Badge -->
+  <g transform="translate(60, 460)">
+    <rect width="280" height="26" rx="8" fill="#1f0a02" stroke="#f7971e" stroke-width="1"/>
+    <text x="140" y="17" font-family="'Rajdhani', sans-serif" font-weight="700" font-size="11" fill="#ffd700" text-anchor="middle" letter-spacing="1.5">PRIZE SETTLEMENT • ZERO FEES • WORLDWIDE</text>
+  </g>
+</svg>
