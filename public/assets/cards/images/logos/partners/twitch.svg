@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50" width="160" height="50">
+  <g transform="translate(10, 10) scale(0.9)">
+    <path fill="#9146FF" d="M3 0L0 7.5v22.5h7.5V36l6-6h4.5l12-12V0H3zm24 16.5l-4.5 4.5h-4.5L12 27v-6H7.5V3h19.5v13.5z"/>
+    <rect fill="#9146FF" x="18" y="7.5" width="3" height="7.5"/>
+    <rect fill="#9146FF" x="10.5" y="7.5" width="3" height="7.5"/>
+  </g>
+  <text x="48" y="32" font-family="'Orbitron', 'Inter', sans-serif" font-size="18" font-weight="700" fill="#A970FF" letter-spacing="1">
+    Twitch
+  </text>
+</svg>

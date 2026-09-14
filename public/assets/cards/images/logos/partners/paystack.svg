@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="100%" height="100%">
+  <!-- Paystack Official Vector Representation -->
+  <g fill="#0ba4db">
+    <rect x="10" y="14" width="28" height="6" rx="3" />
+    <rect x="10" y="24" width="20" height="6" rx="3" />
+    <rect x="10" y="34" width="28" height="6" rx="3" />
+    <rect x="10" y="44" width="14" height="6" rx="3" />
+  </g>
+  <text x="50" y="38" font-family="'Inter', sans-serif" font-weight="800" font-size="22" fill="#ffffff" letter-spacing="0.5">paystack</text>
+</svg>

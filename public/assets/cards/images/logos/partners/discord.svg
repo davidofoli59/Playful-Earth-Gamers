@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50" width="100%" height="100%">
+  <!-- Discord Logo -->
+  <path d="M 28 16 C 21 17, 16 19, 12 21 C 9 27, 8 33, 9 39 C 13 42, 18 43, 23 43 C 24 41, 26 39, 27 37 C 25 36, 23 35, 22 34 C 22 34, 22 34, 23 33 C 32 37, 42 37, 51 33 C 52 34, 52 34, 52 34 C 50 35, 49 36, 47 37 C 48 39, 50 41, 51 43 C 56 43, 61 42, 65 39 C 66 32, 64 26, 62 21 C 58 19, 53 17, 46 16 C 45 18, 44 20, 43 22 C 37 21, 31 21, 25 22 C 24 20, 23 18, 22 16 Z" fill="#5865f2"/>
+  <circle cx="27" cy="27" r="3" fill="#ffffff" />
+  <circle cx="47" cy="27" r="3" fill="#ffffff" />
+  <text x="68" y="32" font-family="'Inter', sans-serif" font-weight="800" font-size="16" fill="#ffffff">DISCORD</text>
+</svg>
