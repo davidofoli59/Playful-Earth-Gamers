@@ -1,0 +1,128 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'superoddschampion@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Admin collection
+    match /admins/{adminId} {
+      allow read: if isSignedIn() && (request.auth.uid == adminId || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // Users collection with strict RBAC and privilege protection
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      
+      // On create, user cannot grant themselves admin, paid status, or elevated roles
+      allow create: if isOwner(userId) &&
+        isValidId(userId) &&
+        incoming().uid == userId &&
+        incoming().role == 'user' &&
+        incoming().paymentStatus == 'unpaid' &&
+        incoming().accountStatus == 'pending' &&
+        (!('isAdmin' in incoming()) || incoming().isAdmin == false);
+
+      // On update, users can update their profile and payment/activation status, but CANNOT modify security privileges (role, uid, isAdmin)
+      allow update: if isOwner(userId) &&
+        isValidId(userId) &&
+        (
+          isAdmin() ||
+          (
+            !incoming().diff(existing()).affectedKeys().hasAny([
+              'role',
+              'uid',
+              'isAdmin'
+            ]) &&
+            incoming().role == existing().role &&
+            incoming().uid == existing().uid
+          )
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    // Payments collection - authoritative, updated only by server-side backend or admin
+    match /payments/{paymentId} {
+      allow get: if isSignedIn() && (resource.data.firebaseUid == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.firebaseUid == request.auth.uid || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // Webhook event logs - server/admin access only
+    match /paymentEvents/{eventId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Audit logs - clients can record their own safe event, read their own logs; only admin can modify
+    match /auditLogs/{logId} {
+      allow get: if isSignedIn() && (resource.data.actorUid == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.actorUid == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && isValidId(logId) && incoming().actorUid == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    // Dynamic Custom Cards created by users
+    match /customCards/{cardId} {
+      allow read: if true;
+      allow create: if isSignedIn() &&
+        isValidId(cardId) &&
+        incoming().authorUid == request.auth.uid &&
+        incoming().title is string &&
+        incoming().title.size() > 0 &&
+        incoming().title.size() <= 150 &&
+        incoming().description is string &&
+        incoming().description.size() <= 1500;
+      allow update, delete: if isSignedIn() && (
+        resource.data.authorUid == request.auth.uid || isAdmin()
+      );
+    }
+
+    // Gaming Results Confirmation and Escrow Settlements
+    match /gamingResults/{resultId} {
+      allow read: if true;
+      allow create: if isSignedIn() &&
+        isValidId(resultId) &&
+        incoming().submitterUid == request.auth.uid;
+      allow update: if isSignedIn() && (
+        resource.data.submitterUid == request.auth.uid ||
+        resource.data.opponentUid == request.auth.uid ||
+        isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+  }
+}

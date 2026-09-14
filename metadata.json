@@ -1,0 +1,6 @@
+{
+  "name": "Playful Earth Gamers (PEG)",
+  "description": "Global competitive esports ecosystem with 3D SaaS storytelling video showcase, interactive Virtual Cards studio, 0% APR gamer micro-loans, real Firebase authentication, and multi-tier certified payment gateways.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
